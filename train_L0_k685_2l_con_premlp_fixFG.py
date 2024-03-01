@@ -20,7 +20,10 @@ from apex.parallel import DistributedDataParallel as DDP
  
 from models.modeling_L0_k685_2l_con_premlp_fixFG import VisionTransformer, CONFIGS
 from utils.scheduler import WarmupLinearSchedule, WarmupCosineSchedule
-from utils.data_utils_cover import get_loader
+# use mask cover dataloader
+#from utils.data_utils_cover import get_loader
+# use origin dataloader
+from utils.data_utils import get_loader
 from utils.dist_util import get_world_size
  
 from models.CELoss import BinaryCrossEntropyLoss
