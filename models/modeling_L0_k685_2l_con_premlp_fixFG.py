@@ -235,7 +235,6 @@ class Block(nn.Module):
 
         h = x
         x = self.ffn_norm(x)
-        print("****MLP shape",x.shape)
         x = self.ffn(x)
         x = x + h
         return x, weights
@@ -501,9 +500,9 @@ class VisionTransformer(nn.Module):
         mask_cls = torch.matmul(x_cls, x_cls.transpose(-1, -2))
         mask_det = torch.matmul(x_det, x_det.transpose(-1, -2))
         mask = mask_cls*mask_det
-        print('mask',mask.shape)
+        # print('mask',mask.shape)
         mask = mask.unsqueeze(1)
-        print('mask',mask.shape)
+        # print('mask',mask.shape)
         
         
         # 稀疏
