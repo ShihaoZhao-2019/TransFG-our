@@ -396,7 +396,7 @@ def main():
                         default="ViT-B_16",
                         help="Which variant to use.")
     
-    parser.add_argument("--pretrained_dir", type=str, default="/data/kb/tanyuanyong/TransFG-master/data/vit_model/ViT-B_16.npz",
+    parser.add_argument("--pretrained_dir", type=str, default="/data/kb/tanyuanyong/TransFG-master/data/vit_model/ViT-B_32.npz",
                          help="Where to search for pretrained ViT models.")
 # =============================================================================
 #     parser.add_argument("--pretrained_dir", type=str, default="/data/kb/tanyuanyong/TransFG-master/data/vit_model/ViT-L_16.npz",
