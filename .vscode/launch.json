@@ -1,0 +1,31 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python 调试程序: 当前文件",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--mixing", "0",
+                "--batchSize", "1",
+                "--nThreads", "1",
+                "--name", "comod-ffhq-512",
+                "--dataset_mode", "cubimage",
+                "--image_dir", "/data/kb/tanyuanyong/TransFG-master/data/CUB_200_2011",
+                "--mask_dir", "dynamic",
+                "--output_dir", "./output/CUB_200_2011_MASK_GEN",
+                "--load_size", "512",
+                "--crop_size", "512",
+                "--z_dim", "512",
+                "--model", "comod",
+                "--netG", "comodgan",
+                "--which_epoch", "co-mod-gan-ffhq-9-025000"
+            ]
+        }
+    ]
+}
