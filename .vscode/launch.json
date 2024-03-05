@@ -8,6 +8,7 @@
             "name": "Python 调试程序: 当前文件",
             "type": "debugpy",
             "request": "launch",
+            "justMyCode": false,
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
@@ -17,14 +18,14 @@
                 "--name", "comod-ffhq-512",
                 "--dataset_mode", "cubimage",
                 "--image_dir", "/data/kb/tanyuanyong/TransFG-master/data/CUB_200_2011",
-                "--mask_dir", "dynamic",
                 "--output_dir", "./output/CUB_200_2011_MASK_GEN",
-                "--load_size", "512",
                 "--crop_size", "512",
                 "--z_dim", "512",
                 "--model", "comod",
                 "--netG", "comodgan",
-                "--which_epoch", "co-mod-gan-ffhq-9-025000"
+                "--which_epoch", "co-mod-gan-ffhq-9-025000",
+                "--min_hole", "0.4",
+                "--max_hole", "0.5"
             ]
         }
     ]
