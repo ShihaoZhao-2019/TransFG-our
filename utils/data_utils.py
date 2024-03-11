@@ -7,7 +7,7 @@ import torch
 from torchvision import transforms
 from torch.utils.data import DataLoader, RandomSampler, DistributedSampler, SequentialSampler
 
-from .dataset import CUB, CarsDataset, NABirds, dogs, INat2017
+from .dataset import CUB, CarsDataset, NABirds, dogs, INat2017, INat2021
 from .autoaugment import AutoAugImageNetPolicy
 
 logger = logging.getLogger(__name__)
@@ -29,6 +29,19 @@ def get_loader(args):
                                     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
         trainset = CUB(root=args.data_root, is_train=True, transform=train_transform)
         testset = CUB(root=args.data_root, is_train=False, transform = test_transform)
+    elif args.dataset == 'INat2021':
+        train_transform=transforms.Compose([transforms.Resize((600, 600), Image.BILINEAR),
+                                    transforms.RandomCrop((448, 448)),
+                                    transforms.RandomHorizontalFlip(),
+                                    AutoAugImageNetPolicy(),
+                                    transforms.ToTensor(),
+                                    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+        test_transform=transforms.Compose([transforms.Resize((600, 600), Image.BILINEAR),
+                                    transforms.CenterCrop((448, 448)),
+                                    transforms.ToTensor(),
+                                    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+        trainset = INat2021(root=args.data_root,transform = train_transform,train = True)
+        testset = INat2021(root=args.data_root,transform = test_transform,train = False)
     elif args.dataset == 'car':
         trainset = CarsDataset(os.path.join(args.data_root,'devkit/cars_train_annos.mat'),
                             os.path.join(args.data_root,'cars_train'),

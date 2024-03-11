@@ -21,6 +21,73 @@ from torchvision.datasets.folder import default_loader
 from torchvision.datasets.utils import download_url, list_dir, check_integrity, extract_archive, verify_str_arg
 import imageio
 
+class INat2021(Dataset):
+    def __init__(
+            self,
+            root,
+            transform=None,
+            train=False):
+        images, class_to_idx,images_info = self.find_images_and_targets(root,train)
+        if len(images) == 0:
+            raise RuntimeError(f'Found 0 images in subfolders of {root}. ')
+        self.root = root
+        self.samples = images
+        self.imgs = self.samples  # torchvision ImageFolder compat
+        self.class_to_idx = class_to_idx
+        self.images_info = images_info
+        self.transform = transform
+        
+
+    def find_images_and_targets(self,root,istrain=False):
+        if os.path.exists(os.path.join(root,'train.json')):
+            with open(os.path.join(root,'train.json'),'r') as f:
+                train_class_info = json.load(f)
+        else:
+            raise ValueError(f'not eixst file {root}/train.json or {root}/train_mini.json')
+        with open(os.path.join(root,'val.json'),'r') as f:
+            val_class_info = json.load(f)
+        categories_2021 = [x['name'].strip().lower() for x in val_class_info['categories']]
+        class_to_idx = {c: idx for idx, c in enumerate(categories_2021)}
+        id2label = dict()
+        for categorie in train_class_info['categories']:
+            id2label[int(categorie['id'])] = categorie['name'].strip().lower()
+        class_info = train_class_info if istrain else val_class_info
+        
+        images_and_targets = []
+        images_info = []
+
+        for image,annotation in zip(class_info['images'],class_info['annotations']):
+            file_path = os.path.join(root,image['file_name'])
+            id_name = id2label[int(annotation['category_id'])]
+            target = class_to_idx[id_name]
+            date = image['date']
+            latitude = image['latitude']
+            longitude = image['longitude']
+            location_uncertainty = image['location_uncertainty']
+            images_info.append({'date':date,
+                    'latitude':latitude,
+                    'longitude':longitude,
+                    'location_uncertainty':location_uncertainty,
+                    'target':target}) 
+            images_and_targets.append((file_path,target))
+        return images_and_targets,class_to_idx,images_info
+
+    def __getitem__(self, index):
+        path, target = self.samples[index]
+        img = Image.open(path).convert('RGB')
+        gt_labels_one_hot = np.full(len(self.class_to_idx), 0, dtype=np.float16)
+        gt_labels_one_hot[target] = 1.0
+        gt_labels_one_hot = torch.from_numpy(gt_labels_one_hot)
+        if self.transform is not None:
+            img = self.transform(img)
+            return img, target, gt_labels_one_hot
+        else:
+            raise ValueError(f'please set a transform')
+        
+    def __len__(self):
+        return len(self.samples)
+   
+
 class CUB():
     def __init__(self, root, is_train=True, data_len=None, transform=None):
         self.root = root
