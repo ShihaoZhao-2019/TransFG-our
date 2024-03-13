@@ -6,7 +6,7 @@ python test.py \
 	--dataset_mode testimage \
 	--image_dir ./ffhq_debug/images \
 	--mask_dir ./ffhq_debug/masks \
-        --output_dir ./ffhq_debug \
+  --output_dir ./ffhq_debug \
 	--load_size 512 \
 	--crop_size 512 \
 	--z_dim 512 \

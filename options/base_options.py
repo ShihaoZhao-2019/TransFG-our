@@ -20,7 +20,7 @@ class BaseOptions():
     def initialize(self, parser):
         # experiment specifics
         parser.add_argument('--name', type=str, default='debug', help='name of the experiment. It decides where to store samples and models')
-        parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
+        parser.add_argument('--gpu_ids', type=str, default='4', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
         parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
         parser.add_argument('--model', type=str, default='comod', help='which model to use')
         parser.add_argument('--phase', type=str, default='train', help='train, val, test, etc')

@@ -13,6 +13,7 @@ import data
 from options.test_options import TestOptions
 import models
 
+# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 opt = TestOptions().parse()
 

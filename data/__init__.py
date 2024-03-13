@@ -11,7 +11,7 @@ from data.base_dataset import BaseDataset
 def find_dataset_using_name(dataset_name):
     # Given the option --dataset [datasetname],
     # the file "datasets/datasetname_dataset.py"
-    # will be imported. 
+    # will be imported.   data.inaimage_dataset
     dataset_filename = "data." + dataset_name + "_dataset"
     datasetlib = importlib.import_module(dataset_filename)
 
@@ -19,12 +19,15 @@ def find_dataset_using_name(dataset_name):
     # be instantiated. It has to be a subclass of BaseDataset,
     # and it is case-insensitive.
     dataset = None
+    #inaimagedataset
     target_dataset_name = dataset_name.replace('_', '') + 'dataset'
     for name, cls in datasetlib.__dict__.items():
         if name.lower() == target_dataset_name.lower() \
            and issubclass(cls, BaseDataset):
             dataset = cls
-            
+    # if dataset_name == 'inaturalist':
+    #     dataset = dataset_name + '_dataset'
+
     if dataset is None:
         raise ValueError("In %s.py, there should be a subclass of BaseDataset "
                          "with class name that matches %s in lowercase." %
@@ -67,6 +70,7 @@ def create_dataloader_trainval(opt):
         num_workers=int(opt.nThreads),
         drop_last=True
     )
+
     dataset = find_dataset_using_name(opt.dataset_mode_val)
     instance = dataset()
     instance.initialize(opt)
