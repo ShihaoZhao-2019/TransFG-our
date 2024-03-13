@@ -1,0 +1,11 @@
+sheelzsh*
+output/
+*/__pycache__/**
+.vscode/
+data/
+nohup*
+nohup/
+logs/
+debug/
+*.file
+*.mat
