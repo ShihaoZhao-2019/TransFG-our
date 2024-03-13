@@ -31,13 +31,13 @@ def get_loader(args):
         testset = CUB(root=args.data_root, is_train=False, transform = test_transform)
     elif args.dataset == 'INat2021':
         train_transform=transforms.Compose([transforms.Resize((600, 600), Image.BILINEAR),
-                                    transforms.RandomCrop((448, 448)),
+                                    transforms.RandomCrop((224, 224)),
                                     transforms.RandomHorizontalFlip(),
                                     AutoAugImageNetPolicy(),
                                     transforms.ToTensor(),
                                     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
         test_transform=transforms.Compose([transforms.Resize((600, 600), Image.BILINEAR),
-                                    transforms.CenterCrop((448, 448)),
+                                    transforms.CenterCrop((224, 224)),
                                     transforms.ToTensor(),
                                     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
         trainset = INat2021(root=args.data_root,transform = train_transform,train = True)

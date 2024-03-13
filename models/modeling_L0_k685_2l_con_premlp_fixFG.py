@@ -81,7 +81,7 @@ class Attention(nn.Module):
         self.proj_dropout = Dropout(config.transformer["attention_dropout_rate"])
 
         self.softmax = Softmax(dim=-1)
-        self.top_k = 685
+        self.top_k = 165
     def transpose_for_scores(self, x):
         new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
         x = x.view(*new_x_shape)
@@ -420,9 +420,9 @@ class VisionTransformer(nn.Module):
         
         patch_size = _pair(config.patches["size"])
         if config.split == 'non-overlap':
-            self.num_tokens = (448 // patch_size[0]) * (448 // patch_size[1])
+            self.num_tokens = (img_size // patch_size[0]) * (img_size // patch_size[1])
         elif config.split == 'overlap':
-            self.num_tokens = ((448 - patch_size[0]) // config.slide_step + 1) * ((448 - patch_size[1]) // config.slide_step + 1)
+            self.num_tokens = ((img_size - patch_size[0]) // config.slide_step + 1) * ((img_size - patch_size[1]) // config.slide_step + 1)
             
         self.mask_heads = config.transformer["num_heads"]
         self.mask_head_size = int(config.hidden_size / config.transformer["num_heads"])
@@ -436,7 +436,7 @@ class VisionTransformer(nn.Module):
         # self.M_fc = nn.Linear(in_features=self.num_tokens+1, out_features=self.num_tokens+1)
         # self.mask_norm = LayerNorm(self.num_tokens+1, eps=1e-6)
         # self.ffn_mask = mask_Mlp(config,self.num_tokens)
-        self.top_k = 685
+        self.top_k = 165
         print('top_k',self.top_k)
         self.alpha = 10
         print('self.alpha',self.alpha)
