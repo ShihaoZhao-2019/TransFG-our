@@ -81,7 +81,7 @@ class Attention(nn.Module):
         self.proj_dropout = Dropout(config.transformer["attention_dropout_rate"])
 
         self.softmax = Softmax(dim=-1)
-        self.top_k = 165
+        self.top_k = 400
     def transpose_for_scores(self, x):
         new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
         x = x.view(*new_x_shape)
@@ -436,9 +436,9 @@ class VisionTransformer(nn.Module):
         # self.M_fc = nn.Linear(in_features=self.num_tokens+1, out_features=self.num_tokens+1)
         # self.mask_norm = LayerNorm(self.num_tokens+1, eps=1e-6)
         # self.ffn_mask = mask_Mlp(config,self.num_tokens)
-        self.top_k = 165
+        self.top_k = 400
         print('top_k',self.top_k)
-        self.alpha = 10
+        self.alpha = 0.001
         print('self.alpha',self.alpha)
     def forward(self, x, labels=None, one_hot_targets=None,local_rank=None):
         forward_counts = 0
@@ -574,6 +574,7 @@ class VisionTransformer(nn.Module):
             
             # loss = part_loss+WSDDN_loss+cls_token_loss
             loss = part_loss+alpha*(WSDDN_loss+cls_token_loss)+ contrast_loss
+            # loss = part_loss + contrast_loss
             return loss, image_level_scores,part_logits
         else:
             return image_level_scores,part_logits
