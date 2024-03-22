@@ -215,6 +215,7 @@ def load_network_path(net, save_path):
 
 
 def load_network(net, label, epoch, opt):
+    #co-mod-gan-places2-050000_net_g_ema.pth
     save_filename = '%s_net_%s.pth' % (epoch, label)
     save_dir = os.path.join(opt.checkpoints_dir, opt.name)
     save_path = os.path.join(save_dir, save_filename)

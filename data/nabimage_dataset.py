@@ -5,7 +5,6 @@ import os
 import numpy as np
 from PIL import Image, ImageDraw
 import math
-import json
 import cv2
 
 def RandomBrush(
@@ -83,8 +82,8 @@ def RandomMask(s, hole_range=[0,1]):
         return mask[np.newaxis, ...].astype(np.float32)
 
 
-class InaImageDataset(BaseDataset):
-
+class NabImageDataset(BaseDataset):
+    
     @staticmethod
     def modify_commandline_options(parser, is_train):
         parser.add_argument('--image_dir', type=str, required=True,
@@ -95,22 +94,16 @@ class InaImageDataset(BaseDataset):
                             help='value to the hole min')
         parser.add_argument('--max_hole', type=float, required=True,
                             help='value to the hole max')
-        parser.add_argument('--dataset_state', type=str, required=False, default='train',
-                            help='value to the hole max')
-
         return parser
     
     def initialize(self, opt):
         if not os.path.exists(opt.output_dir):
             os.makedirs(opt.output_dir)
-
         self.root = opt.image_dir
         self.dst_root = opt.output_dir
         self.mask_generate = RandomMask
         self.min_hole = opt.min_hole
         self.max_hole = opt.max_hole
-        self.state = opt.dataset_state
-
         transform_list = [
                 transforms.Resize((opt.crop_size, opt.crop_size), 
                     interpolation=Image.NEAREST),
@@ -122,40 +115,18 @@ class InaImageDataset(BaseDataset):
             transforms.Resize((opt.crop_size, opt.crop_size),interpolation=Image.NEAREST),
             transforms.ToTensor()
             ])
-
-        if self.state:
-            file_annotation = self.root + '/train.json'
-
-        else:
-            file_annotation = self.root + '/val.json'
-
-        fp = open(file_annotation, 'r')
-        jsontext = json.load(fp)
-        # from json get imagepath and class
-        imgidpath_in = {i['id']: self.root + '/' + i['file_name'] for i in jsontext['images']}
-        imgidpath_out = {i['id']: self.dst_root + '/' + i['file_name'] for i in jsontext['images']}
-        #   info of class
-        imgidclass = {i['image_id']: i['category_id'] for i in jsontext['annotations']}
-        # get sample with path  in and out
-        samples = [(imgidpath_in[i], imgidpath_out[i]) for i in imgidpath_in.keys()]
-        # i dont know
-        self.samples = samples
-
-
-        # img_txt_file = open(os.path.join(self.root, 'images.txt'))
-        # img_name_list = []
-        # for line in img_txt_file:
-        #     img_name_list.append(line[:-1].split(' ')[-1])
-        # self.image_paths = [os.path.join(self.root, 'images', file) for file in
-        #                     img_name_list]
-        # self.output_paths = [os.path.join(self.dst_root, 'images', file) for file in
-        #                     img_name_list]
-
-
-
+        img_txt_file = open(os.path.join(self.root, 'images.txt'))
+        img_name_list = []
+        #取每一行，split是取每一行的最后一个元素，line[:-1]是去除最后一个回车符
+        for line in img_txt_file:
+            img_name_list.append(line[:-1].split(' ')[-1])
+        self.image_paths = [os.path.join(self.root, 'images', file) for file in
+                            img_name_list]
+        self.output_paths = [os.path.join(self.dst_root, 'images', file) for file in
+                            img_name_list]
 
     def __len__(self):
-        return len(self.samples)
+        return len(self.image_paths)
 
 
     def scale_image(self,image):
@@ -178,9 +149,8 @@ class InaImageDataset(BaseDataset):
 
     def __getitem__(self, index):
         # input image (real images)
-        image_path, output_path = self.samples[index]
-        # output_path = self.output_paths[index]
-        # image_path = self.image_paths[index]
+        output_path = self.output_paths[index]
+        image_path = self.image_paths[index]
         image = Image.open(image_path)
         image = image.convert('RGB')
         image,size,rect = self.scale_image(image)
@@ -203,4 +173,4 @@ class InaImageDataset(BaseDataset):
         return input_dict
     
 # if __name__ == '__main__':
-#     dataset = InaImageDataset("/data/kb/tanyuanyong/TransFG-master/data/tmp/INaturalist2021","./INaturalist2021_MASK_GEN")
+#     dataset = CubImageDataset("/data/kb/tanyuanyong/TransFG-master/data/CUB_200_2011","./output/CUB_200_2011_MASK_GEN")

@@ -150,6 +150,7 @@ class CubImageDataset(BaseDataset):
         # input image (real images)
         output_path = self.output_paths[index]
         image_path = self.image_paths[index]
+        #读取文件
         image = Image.open(image_path)
         image = image.convert('RGB')
         image,size,rect = self.scale_image(image)
@@ -171,5 +172,5 @@ class CubImageDataset(BaseDataset):
                       }
         return input_dict
     
-if __name__ == '__main__':
-    dataset = CubImageDataset("/data/kb/tanyuanyong/TransFG-master/data/CUB_200_2011","./output/CUB_200_2011_MASK_GEN")
+# if __name__ == '__main__':
+#     dataset = CubImageDataset("/data/kb/tanyuanyong/TransFG-master/data/CUB_200_2011","./output/CUB_200_2011_MASK_GEN")
