@@ -140,20 +140,7 @@ class InaImageDataset(BaseDataset):
         samples = [(imgidpath_in[i], imgidpath_out[i]) for i in imgidpath_in.keys()]
         # i dont know
         self.samples = samples
-
-
-        # img_txt_file = open(os.path.join(self.root, 'images.txt'))
-        # img_name_list = []
-        # for line in img_txt_file:
-        #     img_name_list.append(line[:-1].split(' ')[-1])
-        # self.image_paths = [os.path.join(self.root, 'images', file) for file in
-        #                     img_name_list]
-        # self.output_paths = [os.path.join(self.dst_root, 'images', file) for file in
-        #                     img_name_list]
-
-
-
-
+        
     def __len__(self):
         return len(self.samples)
 
@@ -184,7 +171,7 @@ class InaImageDataset(BaseDataset):
         image = Image.open(image_path)
         image = image.convert('RGB')
         image,size,rect = self.scale_image(image)
-        image_tensor = self.image_transform(image)
+        # image_tensor = self.image_transform(image)
         mask = self.mask_generate(s=size, hole_range=[self.min_hole,self.max_hole])
         mask_2d = np.squeeze(mask)
         mask_uint8 = (255 * mask_2d).astype(np.uint8)
@@ -193,7 +180,7 @@ class InaImageDataset(BaseDataset):
         mask_tensor = self.mask_transform(mask)
         mask_tensor = (mask_tensor>0).float()
         input_dict = {
-                      'image': image_tensor,
+                    #   'image': None,
                       'mask': mask_tensor,
                       'output_path': output_path,
                       'image_path': image_path,
