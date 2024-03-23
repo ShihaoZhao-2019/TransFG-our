@@ -13,6 +13,7 @@ from options.test_options import TestOptions
 import random
 import concurrent.futures
 import copy
+import time
 
 opt = TestOptions().parse()
 random_mask_ratio = 1
@@ -32,8 +33,7 @@ def add_mask_task(i,data_i,opt):
     masks = torch.clamp(masks, -1, 1)
     masks = masks.numpy().astype(np.uint8)
     
-    for b in range(opt.batchSize):
-        
+    for b in range(len(image_path)):
         if(os.path.isdir(os.path.dirname(output_path[b])) == False):
             os.makedirs(os.path.dirname(output_path[b]))
         origin_image = cv2.imread(image_path[b])
@@ -67,3 +67,4 @@ def add_mask_task(i,data_i,opt):
 with concurrent.futures.ProcessPoolExecutor(max_workers=opt.nThreads) as executor:
     for i, data_i in tqdm(enumerate(dataloader),desc='Processing', unit='item',position=0,total=len(dataloader)):
         executor.submit(add_mask_task, i,copy.deepcopy(data_i),opt)
+    time.sleep(15)
