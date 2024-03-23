@@ -50,25 +50,19 @@ def add_mask_task(i,data_i,opt):
         x1,y1 = int(rect[0][b]) , int(rect[1][b])
         x2,y2 = int(rect[2][b]) , int(rect[3][b])
         
-        
-        origin_file_name, _ = os.path.basename(output_path[b]).split('.')
-        origin_image_save_path = output_path[b]
-
-        masked_image_save_path = output_path[b].replace(origin_file_name, origin_file_name)
-        
         try:
             masked_image[y1:y2, x1:x2] = masked_image[y1:y2, x1:x2] * mask_roi
         except:
             print('have problem:',image_path[b], "will be abort, and will save origin image.Abort numbers:",abort_numbers)
             abort_numbers += 1
-            cv2.imwrite(origin_image_save_path, origin_image)
+            cv2.imwrite(output_path[b], origin_image)
             continue
 
         #添加随机比例划分数据集
         if random.random() <= random_mask_ratio:
-           cv2.imwrite(masked_image_save_path, masked_image)
+           cv2.imwrite(output_path[b], masked_image)
         else:
-            cv2.imwrite(origin_image_save_path, origin_image)
+            cv2.imwrite(output_path[b], origin_image)
     
 with concurrent.futures.ProcessPoolExecutor(max_workers=opt.nThreads) as executor:
     for i, data_i in tqdm(enumerate(dataloader),desc='Processing', unit='item',position=0,total=len(dataloader)):
