@@ -77,8 +77,10 @@ def setup(args):
 
     elif args.dataset == "INat2017":
         num_classes = 5089
-
-
+    
+    elif args.dataset == "INat2021":
+        num_classes = 10000
+        
 
     model = VisionTransformer(config, args.img_size, zero_head=True, num_classes=num_classes, smoothing_value=args.smoothing_value)
 
@@ -386,7 +388,7 @@ def main():
     # Required parameters
     parser.add_argument("--name", required=True,
                         help="Name of this run. Used for monitoring.")
-    parser.add_argument("--dataset", choices=["CUB_200_2011", "car", "dog", "nabirds", "INat2017", "air"], default="CUB_200_2011",
+    parser.add_argument("--dataset", choices=["CUB_200_2011", "car", "dog", "nabirds", "INat2017", "INat2021", "air"], default="CUB_200_2011",
                         help="Which dataset.")
     parser.add_argument('--data_root', type=str, default='./')
     parser.add_argument("--model_type", choices=["ViT-B_16", "ViT-B_32", "ViT-L_16",

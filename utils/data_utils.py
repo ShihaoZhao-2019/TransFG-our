@@ -7,7 +7,7 @@ import torch
 from torchvision import transforms
 from torch.utils.data import DataLoader, RandomSampler, DistributedSampler, SequentialSampler
 
-from .dataset import CUB, CarsDataset, NABirds, dogs, INat2017,air
+from .dataset import CUB, CarsDataset, NABirds, dogs, INat2017, INat2021, air
 from .autoaugment import AutoAugImageNetPolicy
 
 
@@ -53,7 +53,19 @@ def get_loader(args):
         testset = INat2017(args.data_root, 'val', test_transform)
    
    
-   
+    elif args.dataset == 'INat2021':
+        train_transform=transforms.Compose([transforms.Resize((400, 400), Image.BILINEAR),
+                                    transforms.RandomCrop((304, 304)),
+                                    transforms.RandomHorizontalFlip(),
+                                    AutoAugImageNetPolicy(),
+                                    transforms.ToTensor(),
+                                    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+        test_transform=transforms.Compose([transforms.Resize((400, 400), Image.BILINEAR),
+                                    transforms.CenterCrop((304, 304)),
+                                    transforms.ToTensor(),
+                                    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+        trainset = INat2021(args.data_root, train = True, transform = train_transform)
+        testset = INat2021(args.data_root, train=False, transform = test_transform)
    
    
    
@@ -73,13 +85,13 @@ def get_loader(args):
     train_loader = DataLoader(trainset,
                               sampler=train_sampler,
                               batch_size=args.train_batch_size,
-                              num_workers=4,
+                              num_workers=16,
                               drop_last=True,
                               pin_memory=True)
     test_loader = DataLoader(testset,
                              sampler=test_sampler,
                              batch_size=args.eval_batch_size,
-                             num_workers=4,
+                             num_workers=16,
                              pin_memory=True) if testset is not None else None
 
     return train_loader, test_loader
