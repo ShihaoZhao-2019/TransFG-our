@@ -13,15 +13,24 @@ from options.test_options import TestOptions
 import random
 import concurrent.futures
 import copy
-import time
 
 opt = TestOptions().parse()
-random_mask_ratio = 1
+random_mask_ratio = 0.3
 dataloader = data.create_dataloader(opt)
 
-abort_numbers = 0
-
+total_abort_numbers = 0
+total_cauclate_numbers = 0
+def add_mask_task_callback(future):
+    global total_cauclate_numbers
+    global total_abort_numbers
+    cauclate_number = future.result()[0]
+    abort_numbers = future.result()[1]
+    total_cauclate_numbers  = total_cauclate_numbers + cauclate_number
+    total_abort_numbers = total_abort_numbers + abort_numbers
+    
 def add_mask_task(i,data_i,opt):
+    cauclate_number = 0
+    abort_numbers = 0
     if i * opt.batchSize >= opt.how_many:
         return
     output_path = data_i['output_path']
@@ -34,6 +43,7 @@ def add_mask_task(i,data_i,opt):
     masks = masks.numpy().astype(np.uint8)
     
     for b in range(len(image_path)):
+        cauclate_number += 1
         if(os.path.isdir(os.path.dirname(output_path[b])) == False):
             os.makedirs(os.path.dirname(output_path[b]))
         origin_image = cv2.imread(image_path[b])
@@ -53,8 +63,8 @@ def add_mask_task(i,data_i,opt):
         try:
             masked_image[y1:y2, x1:x2] = masked_image[y1:y2, x1:x2] * mask_roi
         except:
-            print('have problem:',image_path[b], "will be abort, and will save origin image.Abort numbers:",abort_numbers)
             abort_numbers += 1
+            print('have problem:',image_path[b], "will be abort, and will save origin image.Abort numbers:",abort_numbers)
             cv2.imwrite(output_path[b], origin_image)
             continue
 
@@ -63,8 +73,12 @@ def add_mask_task(i,data_i,opt):
            cv2.imwrite(output_path[b], masked_image)
         else:
             cv2.imwrite(output_path[b], origin_image)
+    return cauclate_number,abort_numbers
     
 with concurrent.futures.ProcessPoolExecutor(max_workers=opt.nThreads) as executor:
     for i, data_i in tqdm(enumerate(dataloader),desc='Processing', unit='item',position=0,total=len(dataloader)):
-        executor.submit(add_mask_task, i,copy.deepcopy(data_i),opt)
-    time.sleep(15)
+        executor.submit(add_mask_task, i,copy.deepcopy(data_i),opt).add_done_callback(add_mask_task_callback)
+    executor.shutdown(wait=True)
+    print('total_cauclate_numbers:',total_cauclate_numbers)
+    print('total_abort_numbers:',total_abort_numbers)
+    
